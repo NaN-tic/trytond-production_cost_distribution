@@ -1,8 +1,9 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
 from trytond.pool import Pool, PoolMeta
-from trytond.transaction import Transaction
 from decimal import Decimal
+from trytond.i18n import gettext
+from .exceptions import CostWarning
 
 __all__ = ['Production']
 
@@ -33,8 +34,17 @@ class Production(metaclass=PoolMeta):
             sum_ = Decimal(0)
             for output in production.outputs:
                 product = output.product
-                with Transaction().set_context(production._list_price_context):
-                    list_price = product.list_price_used
+                list_price = product.list_price_used
+                if list_price is None:
+                    warning_name = Warning.format(
+                        'production_missing_list_price', [product])
+                    if Warning.check(warning_name):
+                        raise CostWarning(warning_name,
+                            gettext(
+                                'production.msg_missing_product_list_price',
+                                product=product.rec_name,
+                                production=production.rec_name))
+                    continue
                 product_price = (Decimal(str(output.quantity))
                     * Uom.compute_price(
                         product.default_uom, list_price, output.uom))

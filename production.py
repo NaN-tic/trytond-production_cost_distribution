@@ -1,6 +1,7 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
 from trytond.pool import Pool, PoolMeta
+from trytond.transaction import Transaction
 from decimal import Decimal
 
 __all__ = ['Production']
@@ -28,9 +29,27 @@ class Production(metaclass=PoolMeta):
         for production in productions:
             if not production.quantity or not production.uom:
                 continue
-            if production.company.currency.is_zero(
-                    production.cost - production.output_cost):
+
+            sum_ = Decimal(0)
+            for output in production.outputs:
+                product = output.product
+                with Transaction().set_context(production._list_price_context):
+                    list_price = product.list_price_used
+                product_price = (Decimal(str(output.quantity))
+                    * Uom.compute_price(
+                        product.default_uom, list_price, output.uom))
+                sum_ += product_price
+            if not sum_ and production.product:
+                for output in production.outputs:
+                    if output.product == production.product:
+                        quantity = Uom.compute_qty(
+                            output.uom, output.quantity,
+                            output.product.default_uom, round=False)
+                        quantity = Decimal(str(quantity))
+                        sum_ += quantity
+            if production.company.currency.is_zero(production.cost - sum_):
                 continue
+
             unit_price = production.cost / Decimal(
                 str(production.product_output_quantity))
             for output in production.outputs:

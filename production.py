@@ -3,7 +3,7 @@
 from trytond.pool import Pool, PoolMeta
 from decimal import Decimal
 from trytond.i18n import gettext
-from .exceptions import CostWarning
+from trytond.modules.production.exceptions import CostWarning
 
 __all__ = ['Production']
 

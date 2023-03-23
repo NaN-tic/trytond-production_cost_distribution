@@ -22,6 +22,8 @@ class Production(metaclass=PoolMeta):
         pool = Pool()
         Uom = pool.get('product.uom')
         Move = pool.get('stock.move')
+        Warning = pool.get('res.user.warning')
+
         super().set_cost(productions)
 
         digits = Move.unit_price.digits

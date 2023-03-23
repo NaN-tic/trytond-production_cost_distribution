@@ -36,8 +36,7 @@ class Production(metaclass=PoolMeta):
                 product = output.product
                 list_price = product.list_price_used
                 if list_price is None:
-                    warning_name = Warning.format(
-                        'production_missing_list_price', [product])
+                    warning_name = 'production_missing_list_price,%s' % output.id
                     if Warning.check(warning_name):
                         raise CostWarning(warning_name,
                             gettext(

@@ -61,8 +61,11 @@ class Production(metaclass=PoolMeta):
             if production.company.currency.is_zero(production.cost - sum_):
                 continue
 
-            unit_price = production.cost / Decimal(
-                str(production.product_output_quantity))
+            if production.product_output_quantity == 0:
+                unit_price = Decimal(0)
+            else:
+                unit_price = production.cost / Decimal(
+                    str(production.product_output_quantity))
             for output in production.outputs:
                 if output.product == production.product:
                     output.unit_price = Uom.compute_price(

@@ -30,7 +30,7 @@ class Production(metaclass=PoolMeta):
         digit = Decimal(str(10 ** -digits[1]))
         moves = []
         for production in productions:
-            if not production.quantity or not production.uom:
+            if not production.quantity or not production.unit:
                 continue
 
             sum_ = Decimal(0)
@@ -69,6 +69,6 @@ class Production(metaclass=PoolMeta):
             for output in production.outputs:
                 if output.product == production.product:
                     output.unit_price = Uom.compute_price(
-                        production.uom, unit_price, output.uom).quantize(digit)
+                        production.unit, unit_price, output.uom).quantize(digit)
                     moves.append(output)
         Move.save(moves)

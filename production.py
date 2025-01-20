@@ -54,7 +54,7 @@ class Production(metaclass=PoolMeta):
                 for output in production.outputs:
                     if output.product == production.product:
                         quantity = Uom.compute_qty(
-                            output.uom, output.quantity,
+                            output.unit, output.quantity,
                             output.product.default_uom, round=False)
                         quantity = Decimal(str(quantity))
                         sum_ += quantity
@@ -69,6 +69,6 @@ class Production(metaclass=PoolMeta):
             for output in production.outputs:
                 if output.product == production.product:
                     output.unit_price = Uom.compute_price(
-                        production.unit, unit_price, output.uom).quantize(digit)
+                        production.unit, unit_price, output.unit).quantize(digit)
                     moves.append(output)
         Move.save(moves)

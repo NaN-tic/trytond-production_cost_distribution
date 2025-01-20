@@ -48,7 +48,7 @@ class Production(metaclass=PoolMeta):
                     continue
                 product_price = (Decimal(str(output.quantity))
                     * Uom.compute_price(
-                        product.default_uom, list_price, output.uom))
+                        product.default_uom, list_price, output.unit))
                 sum_ += product_price
             if not sum_ and production.product:
                 for output in production.outputs:
